@@ -1,3 +1,6 @@
+from textnode import TextType
+
+
 class HTMLNode:
     def __init__(self, tag = None, value = None, children = None, props = None):
         self.tag = tag
@@ -13,7 +16,7 @@ class HTMLNode:
         if self.props != None:
             for key in self.props:
                 HTML_attributes += f'{key}="{self.props[key]}" '
-            return HTML_attributes.strip()
+        return HTML_attributes.strip()
     
     def __eq__(self, value):
         if not isinstance(value, HTMLNode):
@@ -42,3 +45,28 @@ class LeafNode(HTMLNode):
         if props_html:
             return f"<{self.tag} {props_html}>{self.value}</{self.tag}>"
         return f"<{self.tag}>{self.value}</{self.tag}>"
+    
+    
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props = None):
+        super().__init__(tag, None, children, props)
+        
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("ParentNode must have a tag")
+        if self.children is None:
+            raise ValueError("ParentNode must have children")
+        
+        props_html = self.props_to_html()
+        if props_html:
+            opening_tag = f"<{self.tag} {props_html}>"
+        else:
+            opening_tag = f"<{self.tag}>"
+            
+        children_html = ""
+        for child in self.children:
+            children_html += child.to_html()
+    
+        closing_tag = f"</{self.tag}>"
+    
+        return opening_tag + children_html + closing_tag
