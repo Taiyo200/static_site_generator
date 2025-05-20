@@ -1,3 +1,4 @@
+import re
 from textnode import TextNode, TextType
 
 
@@ -22,6 +23,60 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
     return new_nodes
 
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    image_pattern = r"!\[([^\[\]]*)\]\(([^\(\)]+)\)"
+
+    
+    for node in old_nodes:
+        if old_nodes.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        
+        pos = 0
+        for match in re.finditer(image_pattern, node.text):
+            start, end = match.span()
+            alt_text, image_url = match.groups()
+
+            if start > pos:
+                new_nodes.append(TextNode(node.text[pos:start], TextType.TEXT))
+
+            new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
+
+            pos = end
+
+        if pos < len(node.text):
+            new_nodes.append(TextNode(node.text[pos:], TextType.TEXT))
+
+    return new_nodes
+        
+    
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    link_pattern = r"(?<!!)\[([^\[\]]+)\]\(([^\(\)]+)\)"
+    
+    for node in old_nodes:
+        if old_nodes.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        pos = 0
+        for match in re.finditer(link_pattern, node.text):
+            start, end = match.span()
+            link_text, link_url = match.groups()
+
+            if start > pos:
+                new_nodes.append(TextNode(node.text[pos:start], TextType.TEXT))
+
+            new_nodes.append(TextNode(link_text, TextType.LINK, link_url))
+
+            pos = end
+
+        if pos < len(node.text):
+            new_nodes.append(TextNode(node.text[pos:], TextType.TEXT))
+
+    return new_nodes
     
 def __eq__(self, value):
     if not isinstance(value, TextNode):
