@@ -30,7 +30,7 @@ def split_nodes_image(old_nodes):
 
     
     for node in old_nodes:
-        if old_nodes.text_type != TextType.TEXT:
+        if node.text_type != TextType.TEXT:
             new_nodes.append(node)
             continue
         
@@ -57,7 +57,7 @@ def split_nodes_link(old_nodes):
     link_pattern = r"(?<!!)\[([^\[\]]+)\]\(([^\(\)]+)\)"
     
     for node in old_nodes:
-        if old_nodes.text_type != TextType.TEXT:
+        if node.text_type != TextType.TEXT:
             new_nodes.append(node)
             continue
 
