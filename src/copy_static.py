@@ -1,21 +1,8 @@
 import os
 import shutil
 
-
-def copy_static(source, destination):
-
-    if os.path.exists(destination):
-        print(f"Removing existing directory: {destination}")
-        shutil.rmtree(destination)
-
-    os.makedirs(destination, exist_ok=True)
-
-    for item in os.listdir(source):
-        src_path = os.path.join(source, item)
-        dest_path = os.path.join(destination, item)
-
-        if os.path.isfile(src_path):
-            shutil.copy(src_path, dest_path)
-            print(f"Copied file: {src_path} -> {dest_path}")
-        elif os.path.isdir(src_path):
-            copy_static(src_path, dest_path)
+def copy_static(source_dir, destination_dir):
+    if os.path.exists(destination_dir):
+        shutil.rmtree(destination_dir)
+    shutil.copytree(source_dir, destination_dir)
+    print(f"Copied static files from {source_dir} to {destination_dir}")
